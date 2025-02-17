@@ -4,7 +4,7 @@ clc; clear; close all;
 epsilon = 0.1;
 alpha = -1; 
 beta = 1.5;
-N = 1e6; % Number of grid points
+N = 2^20; % Number of grid points
 h = 1/N;
 tol = 1e-6;
 max_iter = 100;
@@ -29,16 +29,13 @@ u(end) = beta; % Enforce u(1) = beta
 
 
 
-
 for iter = 1:max_iter
     
     % Compute Residual G
+    j = 2:N;
     G = zeros(N-1,1);
-    for j = 2:N
-        G(j-1) = epsilon * (u(j+1) - 2*u(j) + u(j-1)) / h^2 ...
-                 + (u(j) * (u(j+1) - u(j-1)) / (2*h)) - u(j);
-    end
-    
+    G(j-1)=epsilon * (u(j+1) - 2*u(j) + u(j-1)) / h^2 ...
+                    + (u(j) .* (u(j+1) - u(j-1)) / (2*h)) - u(j);
     
 
     % Compute Jacobian J
@@ -61,9 +58,73 @@ for iter = 1:max_iter
     end
 end
 
+
 % Plot the solution
 figure;
 plot(x, u, 'b', 'LineWidth', 2);
 xlabel('x'); ylabel('u(x)');
 title('Solution of the Nonlinear BVP using Newton''s Method');
 grid on;
+
+u_est=u;
+%%
+
+error=zeros(19,1);
+
+for l=2:19
+    N = 2^l; % Number of grid points
+    h = 1/N;
+
+    
+    % Define grid points
+    x = linspace(a, b, N+1)';
+    
+    % Use the corrected initial guess
+    %u = alpha + (x - a) * (beta - alpha) / (b - a) + w0 * tanh(w0 * (x - x_bar) / (2 * epsilon));
+    u = x-x_bar + w0 * tanh(w0 * (x - x_bar) / (2 * epsilon));
+    
+    % Apply Dirichlet boundary conditions
+    u(1) = alpha;  % Enforce u(0) = alpha
+    u(end) = beta; % Enforce u(1) = beta
+    
+    
+    
+    
+    
+    
+    for iter = 1:max_iter
+        
+        % Compute Residual G
+        G = zeros(N-1,1);
+        for j = 2:N
+            G(j-1) = epsilon * (u(j+1) - 2*u(j) + u(j-1)) / h^2 ...
+                     + (u(j) * (u(j+1) - u(j-1)) / (2*h)) - u(j);
+        end
+        
+        
+    
+        % Compute Jacobian J
+        diag_m1=epsilon / h^2 - u(2:N) / (2*h);
+        diag=-2*epsilon / h^2 - (u(3:N+1) - u(1:N-1)) / (2*h) - 1;
+        diag_p1=epsilon / h^2 + u(2:N) / (2*h);
+        J=spdiags([diag_m1,diag,diag_p1],[-1,0,1],N-1,N-1); %sparse
+        
+    
+        % Solve linear system J * delta_u = -G
+        delta_u = -J \ (G);
+        
+        % Update solution (keeping boundary conditions fixed)
+        u(2:N) = u(2:N) + delta_u;
+    
+        % Convergence check
+        if norm(delta_u, inf) < tol
+            %fprintf('Converged in %d iterations\n', iter);
+            break;
+        end
+    end
+    diff=u_est(1:(2^(20-l)):(2^20+1))-u;
+    error(l)=max(abs(diff));
+end
+plot_h=1./(2.^(2:19));
+loglog(plot_h,error(2:end),plot_h,plot_h.^2);
+legend("error","h^2")
