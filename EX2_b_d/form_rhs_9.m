@@ -1,20 +1,28 @@
-function F = form_rhs_9(m,f,u)
+function F = form_rhs_9(m,f,u,laplacian_f)
     h=1/(m+1);
     interval=linspace(h,1-h,m);
     
     [X,Y]=meshgrid(interval,interval);
 
-    f_val=f(X,Y);
-    f_val(:,1)=f_val(:,1)-(1/6*(m+1)^2)*(u(interval'-h,0)+4*u(interval',0)+u(interval'+h,0));
-
-    f_val(:,m)=f_val(:,m)-(1/6*(m+1)^2)*(u(interval'-h,1)+4*u(interval',1)+u(interval'+h,1));
-
-    f_val(1,:)=f_val(1,:)-(1/6*(m+1)^2)*(u(0,interval-h)+4*u(0,interval)+u(0,interval+h));
-
-    f_val(m,:)=f_val(m,:)-(1/6*(m+1)^2)*(u(1,interval-h)+4*u(1,interval)+u(1,interval+h));
-
+    F=f(X,Y);
+   for i = 1:(m)
+        F(i,1)=F(i,1)-(1/(6*h^2))*(4*u(0,i/(m+1))+u(0,(i-1)/(m+1))+u(0,(i+1)/(m+1)));
+        F(i,m)=F(i,m)-(1/(6*h^2))*(4*u(1,i/(m+1))+u(1,(i-1)/(m+1))+u(1,(i+1)/(m+1)));
+    end
+    
+    for i = 1:m
+        F(1,i)=F(1,i)-(1/(6*h^2))*(4*u(i/(m+1),0)+u((i-1)/(m+1),0)+u((i+1)/(m+1),0));
+        F(m,i)=F(m,i)-(1/(6*h^2))*(4*u(i/(m+1),1)+u((i-1)/(m+1),1)+u((i+1)/(m+1),1));
+    end
+    
     %correction for adding
-    f_val([1,m],[1,m])=f_val([1,m],[1,m])+1/6*((m+1)^2)*u([0,0;1,1],[0,1;0,1]);
+    F(1,1)=F(1,1)+1/6*((m+1)^2)*u(0,0);
+    F(1,m)=F(1,m)+1/6*((m+1)^2)*u(0,1);
+    F(m,m)=F(m,m)+1/6*((m+1)^2)*u(1,1);
+    F(m,1)=F(m,1)+1/6*((m+1)^2)*u(1,0);
+    
+    laplac_eval=laplacian_f(X,Y);
+    F= F+1/12*h^2*laplac_eval;
 
-    F=reshape(f_val',[],1);
+    F=reshape(F',[],1);
 end
