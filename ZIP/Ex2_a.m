@@ -28,7 +28,7 @@ u(end) = beta; % Enforce u(1) = beta
 for iter = 1:max_iter
     % Compute Residual F
     F = zeros(N_exact-1,1);
-    N=N_exact
+    N=N_exact;
     for j = 2:N
         F(j-1) = epsilon * (u(j+1) - 2*u(j) + u(j-1)) / h^2 ...
                  + (u(j) * (u(j+1) - u(j-1)) / (2*h)) - u(j);
@@ -68,7 +68,7 @@ u_exact=u;
 
 N = 2.^[2:8]; % Number of grid points
 h = 1./N;
-err=[]
+err=[];
 % Compute w_0 and x_bar from equations (2.103) and (2.104)
 
 w0 = 0.5 * (a - b + beta - alpha);
@@ -115,8 +115,8 @@ for i=1:length(N)
             break;
         end
     end
-    steps=[1:(N_exact/N(i)):N_exact+1]
-    err(i)=max(abs(u-u_exact(steps)))
+    steps=[1:(N_exact/N(i)):N_exact+1];
+    err(i)=max(abs(u-u_exact(steps)));
 
 end
 

@@ -3,13 +3,14 @@
 
 u=@(x,y) sin(4*pi*(x+y)) + cos(4*pi*x.*y);
 f=@(x,y) -16*pi^2*(2*sin(4*pi*(x + y)) + cos(4*pi*x.*y).*(x.^2 + y.^2));
+laplacian_f=@(x,y) 256*(4*pi^2*sin(4*pi*(x+y))+(-1/4+(x.^2+y.^2).^2*pi^2).*cos(4*pi*x.*y)+2*pi.*y.*sin(4*pi*x.*y).*x)*pi^2;
+
 
 m=50;
 
 A = poisson9(m);
 
-
-F=form_rhs_9(m,f,u);
+F=form_rhs_9(m,f,u,laplacian_f);
 
 u_est=reshape(A\F,[m,m]);
 
