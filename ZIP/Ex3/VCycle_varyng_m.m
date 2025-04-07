@@ -4,7 +4,7 @@ close all
 % exact solution and RHS
 u=@(x,y) exp(pi*x).*sin(pi*y)+0.5*(x.*y).^2;
 f=@(x,y) x.^2+y.^2;
-idx=[3 4 5 6 7 8 9]
+idx=[3 4 5 6 7 8 9];
 M=2.^idx-1;
 RESIDUAL=zeros(1,length(idx));
 NITER=zeros(1,length(idx));
@@ -24,7 +24,7 @@ for j=1:length(M)
         % fprintf(' R:%e\n',norm(R,2))
         % fprintf(' F:%e\n',norm(F,2) )
         if(norm(R,2)/norm(F,2) < epsilon)
-            NITER(j)=i
+            NITER(j)=i;
             break;
         end
         U=Vcycle(U,omega,3,m,F);

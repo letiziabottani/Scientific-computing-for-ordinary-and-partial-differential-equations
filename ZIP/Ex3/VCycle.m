@@ -13,6 +13,7 @@ omega=find_best_omega(m);
 
 %%
 figure()
+U =zeros(m*m,1);
 for i=1:100
     R =F+Amult(U,m);
     fprintf('*** Outer iteration: %3d, rel. resid.: %e\n', ...
