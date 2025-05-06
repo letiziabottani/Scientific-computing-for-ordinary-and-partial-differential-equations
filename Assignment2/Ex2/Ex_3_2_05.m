@@ -13,7 +13,7 @@ for idx = 1:length(grid_points)
     x(end) = [];              
 
     
-    atx = 0.7;                  
+    atx = 0.75;                  
     dt = atx * dx / a;
     Nt = round(T/dt);         
     dt = T / Nt;              
