@@ -58,9 +58,9 @@ surf(X,Y,u(X,Y),EdgeColor="none")
 
 norm(U-u(X,Y),2)
 
-%% demonstrate convergence (space
+%% demonstrate convergence (space)
 
-N_s = 2.^(3:7);
+N_s = 2.^(4:7);
 
 h_vals = 2./N_s;
 
@@ -108,9 +108,11 @@ end
 %loglog(h_vals,errors,h_vals,h_vals,h_vals,h_vals.^2)
 
 loglog(h_vals, errors, 'o-', h_vals, h_vals, '--', h_vals,h_vals.^2, ':', 'LineWidth', 1.5);
+xlim([min(h_vals),max(h_vals)])
 legend('L^\infty error','O(h)','O(h^2)', 'Location','northwest');
+xlabel('h'); ylabel('Error'); title('Convergence in L^\infty norm');
 %legend('L^2 error','O(h)','O(h^2)', 'Location','northwest');
-xlabel('h'); ylabel('Error'); title('Convergence in L^2 norm');
+%xlabel('h'); ylabel('Error'); title('Convergence in L^2 norm');
 
 %% convergence test in time
 clc; clear; close all
