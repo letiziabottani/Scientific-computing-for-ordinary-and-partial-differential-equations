@@ -1,0 +1,39 @@
+function [y1,err]=rk23_step(f,t,y,h)
+    % RK23 coefficients (Bogacki–Shampine method), see table 5.2 in the
+    % book
+    
+    % a coefficients for intermediate stages
+    a21 = 1/2;
+    a31 = -1;
+    a32 = 2;
+    
+    % b coefficients (3rd order solution)
+    b1 = 1/6;
+    b2 = 2/3;
+    b3 = 1/6;
+    
+    % d_i = b_i - b_hat_i (used to estimate the local error)
+    b1_hat = b1 - d1;
+    b2_hat = b2 - d2;
+    b3_hat = b3 - d3;
+
+    
+    % b_hat coefficients (2nd order solution)
+    % b1_hat = b1 - d1;
+    % b2_hat = b2 - d2;
+    % b3_hat = b3 - d3;
+
+    c1=0; 
+    c2=1/2; 
+    c3=1; 
+    
+    k1 = f(t,y);
+    k2 = f(t + c2*h, y + a21*h*k1);
+    k3 = f(t + c3*h, y + a31*h*k1 + a32*h*k2);
+    
+    %compute final estimate
+    y1 = y + h * (b1*k1 + b2*k2 + b3*k3);
+    err = h * (d1*k1 + d2*k2 + d3*k3);
+end 
+
+
