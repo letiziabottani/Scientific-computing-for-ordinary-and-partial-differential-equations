@@ -20,13 +20,13 @@ if max_j > 1e5
 end
 
 x = -1 + h*(0:N);
-U = zeros(2, N+1); % only store two time levels
-U(1,:) = u(x, 0); % initial condition
+U = zeros(2, N+1); 
+U(1,:) = u(x, 0); 
 
 for j = 1:max_j
     t = j * k;
     U(2,:) = Burger_iteration(U(1,:), u(-1,t), u(1,t), k, e);
-    U(1,:) = U(2,:); % overwrite previous step
+    U(1,:) = U(2,:); 
 end
 %%
 % Plot final result
@@ -64,7 +64,7 @@ max_time = 2;
 k_scale = [0.1 0.01 0.001 0.0001 ];
 
 % Grids to test
-N = 128;               % from 16 to 128 points
+N = 128;               
 h = 2 ./ N;
 L2_errors = zeros(size(k_scale));
 Linf_errors = zeros(size(k_scale));
@@ -75,7 +75,7 @@ for idx = 1:length(k_scale)
     max_j = round(max_time / k);
     
     x = -1 + h*(0:N);
-    U_old = u(x, 0);  % Initial condition
+    U_old = u(x, 0);  
     U_new = zeros(1, N+1);
     
     % Time integration (only two time levels)
@@ -88,8 +88,8 @@ for idx = 1:length(k_scale)
     % Compute error at final time
     u_exact = u(x, max_time);
     residual = U_new - u_exact;
-    L2_errors(idx) = sqrt(h) * norm(residual, 2);         % scaled L2 norm
-    Linf_errors(idx) = norm(residual, Inf);               % max norm
+    L2_errors(idx) = sqrt(h) * norm(residual, 2);         
+    Linf_errors(idx) = norm(residual, Inf);               
 end
 
 
@@ -112,22 +112,22 @@ x = -1 + h*(0:N);
 L2_errors = zeros(size(k_scale));
 Linf_errors = zeros(size(k_scale));
 
-% === Step 1: Compute Reference Solution ===
-k_ref = h^2 / (2*e) * k_scale(end)/2;  % finest time step
+% Compute Reference Solution 
+k_ref = h^2 / (2*e) * k_scale(end)/2;  
 max_j_ref = round(max_time / k_ref);
-U_ref = u(x, 0);  % initial condition
+U_ref = u(x, 0);  
 
 for j = 1:max_j_ref
     t = j * k_ref;
     U_ref = Burger_iteration(U_ref, u(-1,t), u(1,t), k_ref, e);
 end
 
-% === Step 2: Loop over coarser time steps ===
+% Loop over coarser time steps 
 for idx = 1:length(k_scale)
     k = h^2 / (2*e) * k_scale(idx);
     max_j = round(max_time / k);
     
-    U_num = u(x, 0);  % initial condition
+    U_num = u(x, 0);  
     for j = 1:max_j
         t = j * k;
         U_num = Burger_iteration(U_num, u(-1,t), u(1,t), k, e);
